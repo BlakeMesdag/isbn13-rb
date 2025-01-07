@@ -45,5 +45,10 @@ RSpec.describe Isbn13 do
       expect(Isbn13.has_valid_checksum?(9780143007231)).to eq(false)
       expect(Isbn13.has_valid_checksum?(978014300723)).to eq(false)
     end
+
+    it "works for a 0 sum ISBN (doesn't spit out 10)" do
+      expect(Isbn13.checksum("978-0-543-00723-0")).to eq(0)
+      expect(Isbn13.has_valid_checksum?("978-0-543-00723-0")).to eq(true)
+    end
   end
 end

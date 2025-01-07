@@ -46,6 +46,7 @@ module Isbn13
 
     sums = (evens.sum + (odds.sum * 3)) % 10
 
+    # 10 values are 0 which we can just mod away
     (10 - sums) % 10
   end
 end
