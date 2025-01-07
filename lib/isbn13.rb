@@ -3,7 +3,9 @@
 require_relative "isbn13/version"
 
 module Isbn13
-  class Error < StandardError; end
+  def self.extract_integer(str)
+    str.delete("^0-9").to_i
+  end
 
   def self.checksum(input)
     if input.is_a?(String)
@@ -13,8 +15,23 @@ module Isbn13
     end
   end
 
-  def self.checksum_from_string(input)
-    checksum_from_integer(input.delete("^0-9").to_i)
+  def self.has_valid_checksum?(isbn)
+    ints = if isbn.is_a?(String)
+      extract_integer(isbn)
+    else
+      isbn
+    end.digits.reverse
+
+    if ints.size != 13
+      return false
+    end
+
+    checksum(isbn) == ints.last
+  end
+
+  def self.checksum_from_string(str)
+    # All ISBNs start with 978 or 979 so we don't have to worry about any leading 0s getting cut off
+    checksum_from_integer(extract_integer(str))
   end
 
   def self.checksum_from_integer(input)
