@@ -67,6 +67,7 @@ GEM
 PLATFORMS
   arm64-darwin-21
   arm64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   isbn13!
@@ -75,4 +76,4 @@ DEPENDENCIES
   standard (~> 1.3)
 
 BUNDLED WITH
-   2.3.5
+   2.5.23
