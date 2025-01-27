@@ -5,50 +5,54 @@ RSpec.describe Isbn13 do
     expect(Isbn13::VERSION).not_to be nil
   end
 
-  context "#checksum works for integer inputs" do
-    it "works for integers without a checksum" do
-      expect(Isbn13.checksum(978014300723)).to eq(4)
+  context "Integer barcodes" do
+    it "checksum calculated for barcodes without one" do
+      expect(Isbn13::Barcode.new(978014300723).checksum).to eq(4)
     end
 
-    it "works for integers with an existing checksum" do
-      expect(Isbn13.checksum(9780143007234)).to eq(4)
-    end
-  end
-
-  context "#checksum works for string inputs" do
-    it "works for strings without a checksum" do
-      expect(Isbn13.checksum("978014300723")).to eq(4)
+    it "work with existing checksums" do
+      expect(Isbn13::Barcode.new(9780143007234).checksum).to eq(4)
     end
 
-    it "works for strings with a checksum" do
-      expect(Isbn13.checksum("9780143007234")).to eq(4)
-    end
+    it "#has_valid_checksum? works" do
+      valid_barcode = Isbn13::Barcode.new(9780143007234)
+      invalid_barcode = Isbn13::Barcode.new(9780143007231)
 
-    it "works for strings with dashes" do
-      expect(Isbn13.checksum("978-0-143-00723")).to eq(4)
-    end
-
-    it "works for strings with dashes with a checksum" do
-      expect(Isbn13.checksum("978-0-143-00723-4")).to eq(4)
+      expect(valid_barcode.has_valid_checksum?).to eq(true)
+      expect(invalid_barcode.has_valid_checksum?).to eq(false)
     end
   end
 
-  context "#has_valid_checksum?" do
-    it "works for strings" do
-      expect(Isbn13.has_valid_checksum?("9780143007234")).to eq(true)
-      expect(Isbn13.has_valid_checksum?("9780143007231")).to eq(false)
-      expect(Isbn13.has_valid_checksum?("978014300723")).to eq(false)
+  context "String barcodes" do
+    it "work without a checksum" do
+      expect(Isbn13::Barcode.new("978014300723").checksum).to eq(4)
     end
 
-    it "works for integers" do
-      expect(Isbn13.has_valid_checksum?(9780143007234)).to eq(true)
-      expect(Isbn13.has_valid_checksum?(9780143007231)).to eq(false)
-      expect(Isbn13.has_valid_checksum?(978014300723)).to eq(false)
+    it "work with a checksum" do
+      expect(Isbn13::Barcode.new("9780143007234").checksum).to eq(4)
     end
 
-    it "works for a 0 sum ISBN (doesn't spit out 10)" do
-      expect(Isbn13.checksum("978-0-543-00723-0")).to eq(0)
-      expect(Isbn13.has_valid_checksum?("978-0-543-00723-0")).to eq(true)
+    it "work with dashes" do
+      expect(Isbn13::Barcode.new("978-0-143-00723").checksum).to eq(4)
+    end
+
+    it "work with dashes with a checksum" do
+      expect(Isbn13::Barcode.new("978-0-143-00723-4").checksum).to eq(4)
+    end
+
+    it "work with 0 sum checksum" do
+      zero_checksum = Isbn13::Barcode.new("978-0-543-00723-0")
+
+      expect(zero_checksum.checksum).to eq(0)
+      expect(zero_checksum.has_valid_checksum?).to eq(true)
+    end
+
+    it "#has_valid_checksum? works" do
+      valid_barcode = Isbn13::Barcode.new("9780143007234")
+      invalid_barcode = Isbn13::Barcode.new("9780143007234", checksum: 1)
+
+      expect(valid_barcode.has_valid_checksum?).to eq(true)
+      expect(invalid_barcode.has_valid_checksum?).to eq(false)
     end
   end
 end
